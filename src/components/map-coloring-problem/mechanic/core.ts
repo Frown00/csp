@@ -48,8 +48,8 @@ function isValidNeighbour(region: IRegion, nearest: IRegion, lines: ILine[]) {
       const isStartingIntersect = isSamePoint(near.start, [intersection.point.x, intersection.point.y]);
       const isEndingIntersect = isSamePoint(near.end, [intersection.point.x, intersection.point.y]);
       isIntersect = !isStartingIntersect;
-      // if(isIntersect)
-      //   isIntersect = !isEndingIntersect;
+      if(isIntersect)
+        isIntersect = !isEndingIntersect;
     }
     if(isIntersect) {
       return false;

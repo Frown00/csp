@@ -1,6 +1,13 @@
 import { ILine, IRegion } from "../types";
 import * as mechanic from "./index";
 
+enum COLOR {
+  BLUE = 'blue',
+  YELLOW = 'yellow',
+  GREEN = 'green',
+  RED = 'red'
+}
+
 export class MapColoringProblem {
   private width: number;
   private height: number;
@@ -37,5 +44,9 @@ export class MapColoringProblem {
       i++;
     }
     return regions;
+  }
+
+  solve() {
+    //
   }
 }
