@@ -1,7 +1,8 @@
 import * as React from 'react';
 import * as mechanic from './mechanic';
 import { IRegion } from './types';
-import Map from './Map';
+import Map from './Graph';
+import Graph from './Graph';
 
 interface IProps {
 }
@@ -10,15 +11,17 @@ interface IState {
   width?: number;
   height?: number;
   nPoints?: number,
-  regions?: IRegion[]
+  regions?: IRegion[],
+  colors?: number;
 }
 
 export default class MapColoringProblem extends React.Component<IProps, IState> {
   state: IState = {
-    width: 13,
+    width: 10,
     height: 10,
-    nPoints: 20,
+    nPoints: 10,
     regions: [],
+    colors: 3
   }
   constructor(props: IProps) {
     super(props);
@@ -33,8 +36,10 @@ export default class MapColoringProblem extends React.Component<IProps, IState> 
     const width = this.state.width;
     const height = this.state.height;
     const nPoints = this.state.nPoints;
-    const problem = new mechanic.MapColoringProblem(width, height, nPoints);
+    const colors = this.state.colors;
+    const problem = new mechanic.ColoringProblem(width, height, nPoints, colors);
     const regions = problem.generate();
+    problem.solve();
     this.setState({ regions });
   }
 
@@ -67,9 +72,13 @@ export default class MapColoringProblem extends React.Component<IProps, IState> 
           Points: 
           <input type="number" value={this.state.nPoints} name='nPoints' onChange={this.handleInputChange}/>  
         </label><br />
+        <label>
+          Colors: 
+          <input type="number" min={2} max={7} value={this.state.colors} name='colors' onChange={this.handleInputChange}/>  
+        </label><br />
         <button onClick={this.run}>Run</button>
         <button onClick={this.reset}>Reset</button>
-        <Map 
+        <Graph 
           height={this.state.height} 
           width={this.state.width} 
           nPoints={this.state.nPoints} 
