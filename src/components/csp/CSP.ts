@@ -24,6 +24,10 @@ export class CSP<V, D> {
     return null;
   }
 
+  getSolutionsCount() {
+    return this.solutions.length;
+  }
+
   addVariable(variable: { id: V, value: D }, domain: D[]) {
     this.variables.push(variable);
     this.domains.push(domain);
@@ -37,50 +41,20 @@ export class CSP<V, D> {
     this.constraints.push(constraint);
   }
 
-  // backtracing() {
-  //   for(let i = 0; i < this.state.length; i++) {
-  //     const domain = this.state[i].domain;
-  //     const variable = this.variables[i];
-  //     if(domain.length <= 0) {
-  //       // go back
-  //     }
-  //     variable.value = domain[0];
-  //     let d = 1;
-  //     while(this.isBreak()) {
-  //       variable.value = domain[d];
-  //       d++;
-  //       if(d > domain.length) break;
-  //     }
-  //     if(d > domain.length) {
-  //       variable.value = null;
-  //       const last = this.state[this.state.length - 1];
-
-  //       // go back
-  //     } else {
-  //       this.state[i].variable.value = variable.value;
-  //       const removeIdx = domain.indexOf(variable.value);
-  //       domain.splice(removeIdx, 1);
-  //     }
-  //   }
-  //   console.log(this.variables);
-  //   console.log(this.isBreak());
-  // }
-
   backtracing() {
-    if(!this.backtrace(0)) {
-      console.log('No solution')
+    this.backtrace(0);
+    if(this.solutions.length <= 0) {
       return false;
     }
-    console.log('Solution');
-    console.log(this.variables);
-    this.solutions.push(_.cloneDeep(this.variables));
+    return true;
   }
 
   private backtrace(i: number) {
     if(i === this.variables.length) {
       if(this.isSafe()) {
         // solution
-        return true;
+        this.solutions.push(_.cloneDeep(this.variables));
+        return false;
       }
       return false;
     }
