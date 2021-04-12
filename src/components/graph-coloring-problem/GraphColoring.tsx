@@ -13,6 +13,7 @@ interface IState {
   nPoints?: number,
   regions?: IRegion[],
   colors?: number;
+  solutions?: number;
 }
 
 export default class MapColoringProblem extends React.Component<IProps, IState> {
@@ -32,6 +33,7 @@ export default class MapColoringProblem extends React.Component<IProps, IState> 
   }
 
   run() {
+    console.clear();
     console.log('Run');
     const width = this.state.width;
     const height = this.state.height;
@@ -39,8 +41,8 @@ export default class MapColoringProblem extends React.Component<IProps, IState> 
     const colors = this.state.colors;
     const problem = new mechanic.ColoringProblem(width, height, nPoints, colors);
     const regions = problem.generate();
-    problem.solve();
-    this.setState({ regions });
+    const solutions = problem.solve();
+    this.setState({ regions, solutions });
   }
 
   reset() {
@@ -84,6 +86,14 @@ export default class MapColoringProblem extends React.Component<IProps, IState> 
           nPoints={this.state.nPoints} 
           regions={this.state.regions} 
         />
+        <div style={{marginTop: '10px'}}>
+        { this.state.solutions ? 
+            <p>There are <b>{this.state.solutions}</b> possible ways to solve this problem</p>
+          : this.state.solutions != undefined ? 
+            <p>No solution</p> 
+          : ''
+        }
+        </div>
       </div>
     );
   }
