@@ -99,9 +99,10 @@ export class ColoringProblem {
         const region = this.regions.find(r => isSamePoint(r.point, solution[i].id));
         region.color = solution[i].value;
       }
+      console.info('There are', csp.getSolutionsCount(), 'possible ways to solve this problem');
     } else {
       console.info('No solution');
     }
-    
+    return csp.getSolutionsCount();
   }
 }
