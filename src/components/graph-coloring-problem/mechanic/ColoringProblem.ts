@@ -2,7 +2,7 @@ import { log } from "../../../util";
 import { CSP } from "../../csp/CSP";
 import { ILine, IRegion, Point } from "../types";
 import * as mechanic from "./index";
-import _ from "lodash";
+import _, { remove } from "lodash";
 import { IVariable } from "../../csp/types";
 import { isSamePoint } from "./core";
 
@@ -45,21 +45,26 @@ export class ColoringProblem {
       regions.push({ point: [x, y], neighbors: [] });
     }
     const lines: ILine[] = [];
-    let actual = regions[0];
-    let i = 0;
-    while(true) {
+    const possibleIdx = [];
+    for(let i = 0; i < regions.length; i++) {
+      possibleIdx.push(i);
+    }
+    while(possibleIdx.length > 0) {
+      const idx = possibleIdx[Math.floor(Math.random() * possibleIdx.length)];
+      const actual = regions[idx];
       const available = regions.filter(r => !mechanic.isSamePoint(actual.point, r.point));
       const possible = available.filter(
         r => !actual.neighbors.find(n => mechanic.isSamePoint(n.point, r.point))
       );
       let neighbor = mechanic.findNeighbor(actual, possible, lines);
-      if(!neighbor)
-        break;
-      actual.neighbors.push(neighbor);
-      neighbor.neighbors.push(actual);
-      lines.push({start: actual.point, end: neighbor.point });
-      actual = neighbor;
-      i++;
+      if(neighbor) {
+        actual.neighbors.push(neighbor);
+        neighbor.neighbors.push(actual);
+        lines.push({ start: actual.point, end: neighbor.point });
+      } else {
+        const removeId = possibleIdx.indexOf(idx);
+        possibleIdx.splice(removeId, 1);
+      }
     }
     this.regions = regions;
     return regions;
