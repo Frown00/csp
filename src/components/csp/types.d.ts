@@ -1,4 +1,4 @@
-export interface IVariable<T, V> {
+export interface IVariable<T> {
   id: T,
-  value: V
+  value: any[]
 }
