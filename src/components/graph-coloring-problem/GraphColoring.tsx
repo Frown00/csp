@@ -7,6 +7,11 @@ import Graph from './Graph';
 interface IProps {
 }
 
+enum Alghortihm {
+  BACKTRACKING = 'Backtracking',
+  FORWARD_CHECKING = 'Forward checking'
+}
+
 interface IState {
   width?: number;
   height?: number;
@@ -14,6 +19,7 @@ interface IState {
   regions?: IRegion[],
   colors?: number;
   solutions?: number;
+  alghorithm?: Alghortihm;
 }
 
 export default class MapColoringProblem extends React.Component<IProps, IState> {
@@ -22,7 +28,8 @@ export default class MapColoringProblem extends React.Component<IProps, IState> 
     height: 10,
     nPoints: 10,
     regions: [],
-    colors: 3
+    colors: 3,
+    alghorithm: Alghortihm.BACKTRACKING
   }
   constructor(props: IProps) {
     super(props);
@@ -41,7 +48,12 @@ export default class MapColoringProblem extends React.Component<IProps, IState> 
     const colors = this.state.colors;
     const problem = new mechanic.ColoringProblem(width, height, nPoints, colors);
     const regions = problem.generate();
-    const solutions = problem.solve();
+    let solutions = 0;
+    if(this.state.alghorithm === Alghortihm.BACKTRACKING) {
+      solutions = problem.solveBackTracing();
+    } else if(this.state.alghorithm === Alghortihm.FORWARD_CHECKING) {
+      solutions = problem.solveForward();
+    }
     this.setState({ regions, solutions });
   }
 
@@ -78,6 +90,17 @@ export default class MapColoringProblem extends React.Component<IProps, IState> 
           Colors: 
           <input type="number" min={2} max={7} value={this.state.colors} name='colors' onChange={this.handleInputChange}/>  
         </label><br />
+        <label>
+          Algorithm:
+          <select name='alghorithm' onChange={this.handleInputChange}>
+            <option>{Alghortihm.BACKTRACKING}</option>
+            <option>{Alghortihm.FORWARD_CHECKING}</option>
+          </select>
+        </label> <br />
+        <label>
+          Variable with minium available values:
+          <input type="checkbox" name="variableWithMinium" />
+        </label> <br />
         <button onClick={this.run}>Run</button>
         <button onClick={this.reset}>Reset</button>
         <Graph 

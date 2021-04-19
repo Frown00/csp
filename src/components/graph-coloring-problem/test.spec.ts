@@ -12,7 +12,7 @@ describe('Mechanic', () => {
       // When
       const map = new mechanic.ColoringProblem(width, height, nPoints);
       map.generate();
-      map.solve();
+      map.solveBackTracing();
       // Then
       // log(map);
     });

@@ -21,7 +21,7 @@ export enum Color {
 
 export enum Smoke {
   LIGHT = 'cigarette light',
-  NO_FILTER = 'cigaretter without a filter',
+  NO_FILTER = 'cigarette without a filter',
   MENTHOL = 'menthol cigarette',
   CIGAR = 'cigar',
   PIPE = 'pipe'
@@ -57,12 +57,21 @@ export class EinsteinPuzzle {
   }
 
   isAllDifferent() {
-    console.log(this.variables);
     const values = _.flatten(this.variables.map(v => v.value));
+    const count = _.countBy(values);
     const unique = _.uniq(values);
-    return values.length === unique.length;
+    return values.length === (unique.length + count['null'] - 1);
   }
 
+  constraint(coded: string) {
+    const values = _.flatten(this.variables.map(v => v.value));
+    for(let i = 0; coded.length; i++) {
+      const v = coded[i];
+      if(v != 'x') {
+
+      }
+    }
+  }
   oneValueBoundAnother(
     value: any, 
     another: any
@@ -72,27 +81,25 @@ export class EinsteinPuzzle {
         .find(v => v === value)
       );
     if(!variable) return true;
-    console.log(value, variable, variable.value.includes(another));
+    // console.log(value, variable, variable.value.includes(another));
     return variable.value.includes(another);
   }
 
   solve() {
-    // const houses = [1, 2, 3, 4, 5];
+    const houses = [1, 2, 3, 4, 5];
     const nationality = Object.values(Nationality);
     const color = Object.values(Color);
     const smoke = Object.values(Smoke);
     const drink = Object.values(Drink);
     const pet = Object.values(Pet);
-
+    const domains = [houses, nationality, color, smoke, drink, pet];
     const csp = new CSP<number>();    
-    // csp.addDomain(houses);
-    csp.addDomain(color);
-    // csp.addDomain(nationality);
-    // csp.addDomain(smoke);
-    // csp.addDomain(drink);
-    // csp.addDomain(pet);
+    
     for(let i = 0; i < this.variables.length; i++) {
       csp.addVariable(this.variables[i]);
+      for(let d = 0; d < domains.length; d++) {
+        csp.addDomain(i, domains[d]);
+      }
     }
     csp.addConstraints(
       () => this.isAllDifferent(),
@@ -105,7 +112,7 @@ export class EinsteinPuzzle {
       // () => 
       
     );
-    csp.backtracing();
+    csp.backtracking();
     console.log(csp.getFirstSolution());
     // const constraints = [
     //   this.allDifferent(nationality),
