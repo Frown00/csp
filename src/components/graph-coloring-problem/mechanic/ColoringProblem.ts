@@ -40,9 +40,16 @@ export class ColoringProblem {
   generate() {
     const regions: IRegion[] = [];
     for(let i = 0; i < this.nPoints; i++) {
-      const x = Math.floor(Math.random() * this.width);
-      const y = Math.floor(Math.random() * this.height);
-      regions.push({ point: [x, y], neighbors: [] });
+      
+      let isExists = true;
+      let point: Point = null
+      while(isExists) {
+        const x = Math.floor(Math.random() * this.width);
+        const y = Math.floor(Math.random() * this.height);
+        point = [x, y];
+        isExists = !!regions.find(r => isSamePoint(r.point, point));
+      }
+      regions.push({ point, neighbors: [] });
     }
     const lines: ILine[] = [];
     const possibleIdx = [];
@@ -79,25 +86,72 @@ export class ColoringProblem {
     return region.value[0] !== neighbor.value[0];
   }
 
-  solve() {
+  solveForward() {
     const csp = new CSP<Point>();
-    const variables = [];
+    const variables: IVariable<Point>[] = [];
     for(let v = 0; v < this.regions.length; v++) {
       const region = this.regions[v];
-      variables.push( { id: region.point,  value: [region.color] });
+      variables.push({ 
+        id: region.point,  
+        value: [], 
+      });
     }
-    csp.addDomain(this.colors);
     for(let i = 0; i < this.regions.length; i++) {
       const region = this.regions[i];
       const variable = variables[i];
       csp.addVariable(variable);
+      csp.addDomain(i, [...this.colors]);
       for(let n = 0; n < region.neighbors.length; n++) {
         const neighbor = region.neighbors[n];
         const neighborVar = variables.find(v => isSamePoint(v.id, neighbor.point));
         csp.addConstraints(() => this.isDifferent(variable, neighborVar));
       }
     }
-    csp.backtracing();
+    const start = Date.now();
+    csp.forward();
+    const end = Date.now();
+    console.log('Forward time: ', (end - start));
+
+    const solution = csp.getRandomSolution();
+    if(solution) {
+      for(let i = 0; i < solution.length; i++) {
+        const region = this.regions.find(r => isSamePoint(r.point, solution[i].id));
+        region.color = solution[i].value[0];
+      }
+      console.info('There are', csp.getSolutionsCount(), 'possible ways to solve this problem');
+    } else {
+      console.info('No solution');
+    }
+    console.log(this.regions);
+    return csp.getSolutionsCount();
+  }
+
+  solveBackTracing() {
+    const csp = new CSP<Point>();
+    const variables: IVariable<Point>[] = [];
+    for(let v = 0; v < this.regions.length; v++) {
+      const region = this.regions[v];
+      variables.push({ 
+        id: region.point,  
+        value: [], 
+      });
+    }
+    for(let i = 0; i < this.regions.length; i++) {
+      const region = this.regions[i];
+      const variable = variables[i];
+      csp.addVariable(variable);
+      csp.addDomain(i, [...this.colors]);
+      for(let n = 0; n < region.neighbors.length; n++) {
+        const neighbor = region.neighbors[n];
+        const neighborVar = variables.find(v => isSamePoint(v.id, neighbor.point));
+        csp.addConstraints(() => this.isDifferent(variable, neighborVar));
+      }
+    }
+    const start2 = Date.now();
+    csp.backtracking();
+    const end2 = Date.now();
+    console.log('Backtracking time: ', (end2 - start2));
+
     const solution = csp.getRandomSolution();
     if(solution) {
       for(let i = 0; i < solution.length; i++) {
