@@ -4,7 +4,8 @@ import { EinsteinPuzzle } from './EinsteinPuzzle';
 
 describe('Mechanic', () => {
   describe('EinsteinPuzzle solve()', () => {
-    it.only('should return one random weighted direction', () => {
+    it.only('should return one random weighted direction', function() {
+      this.timeout(50000);
       // Given
       const width = 10;
       const height = 10;

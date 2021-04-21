@@ -48,19 +48,18 @@ export class EinsteinPuzzle {
 
   constructor() {
     this.variables = [
-      { id: 1, value: [] },
-      { id: 2, value: [] },
-      { id: 3, value: [] },
-      { id: 4, value: [] },
-      { id: 5, value: [] }
+      { id: 1, value: [null, null, null, null, null, null] },
+      { id: 2, value: [null, null, null, null, null, null] },
+      { id: 3, value: [null, null, null, null, null, null] },
+      { id: 4, value: [null, null, null, null, null, null] },
+      { id: 5, value: [null, null, null, null, null, null] }
     ]
   }
 
   isAllDifferent() {
-    const values = _.flatten(this.variables.map(v => v.value));
-    const count = _.countBy(values);
+    const values = _.flatten(this.variables.map(v => v.value)).filter(v => v !== null);
     const unique = _.uniq(values);
-    return values.length === (unique.length + count['null'] - 1);
+    return values.length === (unique.length);
   }
 
   constraint(coded: string) {

@@ -52,9 +52,9 @@ export class CSP<V> {
     this.constraints.push(...constraints);
   }
 
-  backtracking() {
+  backtracking(mostContrainted?: boolean) {
     this.visitedNodes = 0;
-    this.backtrack(0);
+    this.backtrack(0, mostContrainted || false);
     console.log("Backtracking nodes", this.visitedNodes);
     if(this.solutions.length <= 0) {
       return false;
@@ -62,9 +62,9 @@ export class CSP<V> {
     return true;
   }
 
-  forward() {
+  forward(mostContrainted?: boolean) {
     this.visitedNodes = 0;
-    this.forwardChecking(0, _.cloneDeep(this.domains));
+    this.forwardChecking(0, _.cloneDeep(this.domains), mostContrainted || false);
     console.log("Forward nodes", this.visitedNodes);
     if(this.solutions.length <= 0) {
       return false;
@@ -72,8 +72,11 @@ export class CSP<V> {
     return true;
   }
 
-  private backtrack(i: number) {
+  private backtrack(i: number, mostContrained: boolean) {
+    // const isComplete = this.variables.every(v => v.value[0]);
+    // const isComplete = i === this.variables.length;
     const isComplete = this.variables.every(v => v.value[0]);
+
     if(isComplete) {
       if(this.isSatisfied()) {
         // solution
@@ -82,21 +85,24 @@ export class CSP<V> {
       }
       return false;
     }
-    const id = this.getMostConstrainedVariable();
+    let id = i;
+    if(mostContrained) {
+      id = this.getMostConstrainedVariable();
+    }
     const variable = this.variables[id];
     const domains = this.domains[id];
-    for(let i = 0; i < domains.length; i++) {
-      const domain = domains[i];
+    for(let j = 0; j < domains.length; j++) {
+      const domain = domains[j];
       for(let c = 0; c < domain.length; c++) {
         this.visitedNodes++;
         const value = domain[c];
-        variable.value[i] = value;
+        variable.value[j] = value;
         if(this.isSatisfied()) {
-          if(this.backtrack(i + 1)) {
+          if(this.backtrack(i + 1, mostContrained)) {
             return true;
           }
         } else {
-          variable.value[i] = null;
+          variable.value[j] = null;
         }
       }
     }
@@ -104,7 +110,7 @@ export class CSP<V> {
     return false;
   }
 
-  private forwardChecking(i: number, legal: any[][][]) {
+  private forwardChecking(i: number, legal: any[][][], mostConstrained: boolean) {
     const isComplete = this.variables.every(v => v.value[0]);
     if(isComplete) {
       if(this.isSatisfied()) {
@@ -114,7 +120,10 @@ export class CSP<V> {
       }
       return false;
     }
-    const id = this.getMostConstrainedVariable();
+    let id = i;
+    if(mostConstrained) {
+      id = this.getMostConstrainedVariable();      
+    }
     const variable = this.variables[id];
     let domain = legal[id][0];
     for(let c = 0; c < domain.length; c++) {
@@ -123,7 +132,7 @@ export class CSP<V> {
       variable.value[0] = value;
       if(this.isSatisfied()) {
         const removedIllegal = this.removeIllegal(i + 1, _.cloneDeep(legal))
-        if(this.forwardChecking(i + 1, removedIllegal)) {
+        if(this.forwardChecking(i + 1, removedIllegal, mostConstrained)) {
           return true;
         } 
       } else {
