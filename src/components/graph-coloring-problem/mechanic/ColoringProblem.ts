@@ -86,7 +86,7 @@ export class ColoringProblem {
     return region.value[0] !== neighbor.value[0];
   }
 
-  solveForward() {
+  solveForward(mostContrained: boolean) {
     const csp = new CSP<Point>();
     const variables: IVariable<Point>[] = [];
     for(let v = 0; v < this.regions.length; v++) {
@@ -108,7 +108,7 @@ export class ColoringProblem {
       }
     }
     const start = Date.now();
-    csp.forward();
+    csp.forward(mostContrained);
     const end = Date.now();
     console.log('Forward time: ', (end - start));
 
@@ -118,15 +118,15 @@ export class ColoringProblem {
         const region = this.regions.find(r => isSamePoint(r.point, solution[i].id));
         region.color = solution[i].value[0];
       }
-      console.info('There are', csp.getSolutionsCount(), 'possible ways to solve this problem');
+      // console.info('There are', csp.getSolutionsCount(), 'possible ways to solve this problem');
     } else {
-      console.info('No solution');
+      // console.info('No solution');
     }
     console.log(this.regions);
     return csp.getSolutionsCount();
   }
 
-  solveBackTracing() {
+  solveBackTracing(mostContrained: boolean) {
     const csp = new CSP<Point>();
     const variables: IVariable<Point>[] = [];
     for(let v = 0; v < this.regions.length; v++) {
@@ -148,7 +148,7 @@ export class ColoringProblem {
       }
     }
     const start2 = Date.now();
-    csp.backtracking();
+    csp.backtracking(mostContrained);
     const end2 = Date.now();
     console.log('Backtracking time: ', (end2 - start2));
 
@@ -158,9 +158,9 @@ export class ColoringProblem {
         const region = this.regions.find(r => isSamePoint(r.point, solution[i].id));
         region.color = solution[i].value[0];
       }
-      console.info('There are', csp.getSolutionsCount(), 'possible ways to solve this problem');
+      // console.info('There are', csp.getSolutionsCount(), 'possible ways to solve this problem');
     } else {
-      console.info('No solution');
+      // console.info('No solution');
     }
     console.log(this.regions);
     return csp.getSolutionsCount();

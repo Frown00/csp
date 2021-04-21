@@ -20,16 +20,18 @@ interface IState {
   colors?: number;
   solutions?: number;
   alghorithm?: Alghortihm;
+  variableWithMinium?: boolean
 }
 
 export default class MapColoringProblem extends React.Component<IProps, IState> {
   state: IState = {
     width: 10,
     height: 10,
-    nPoints: 10,
+    nPoints: 6,
     regions: [],
     colors: 3,
-    alghorithm: Alghortihm.BACKTRACKING
+    alghorithm: Alghortihm.BACKTRACKING,
+    variableWithMinium: false,
   }
   constructor(props: IProps) {
     super(props);
@@ -49,10 +51,15 @@ export default class MapColoringProblem extends React.Component<IProps, IState> 
     const problem = new mechanic.ColoringProblem(width, height, nPoints, colors);
     const regions = problem.generate();
     let solutions = 0;
+    // solutions = problem.solveBackTracing(false);
+    // for(let i = 0; i < regions.length; i++) {
+    //   regions[i].color = null;
+    // }
+    // solutions = problem.solveBackTracing(true);
     if(this.state.alghorithm === Alghortihm.BACKTRACKING) {
-      solutions = problem.solveBackTracing();
+      solutions = problem.solveBackTracing(this.state.variableWithMinium);
     } else if(this.state.alghorithm === Alghortihm.FORWARD_CHECKING) {
-      solutions = problem.solveForward();
+      solutions = problem.solveForward(this.state.variableWithMinium);
     }
     this.setState({ regions, solutions });
   }
@@ -99,7 +106,7 @@ export default class MapColoringProblem extends React.Component<IProps, IState> 
         </label> <br />
         <label>
           Variable with minium available values:
-          <input type="checkbox" name="variableWithMinium" />
+          <input type="checkbox" name="variableWithMinium" onChange={this.handleInputChange} />
         </label> <br />
         <button onClick={this.run}>Run</button>
         <button onClick={this.reset}>Reset</button>
