@@ -73,8 +73,6 @@ export class CSP<V> {
   }
 
   private backtrack(i: number, mostContrained: boolean) {
-    // const isComplete = this.variables.every(v => v.value[0]);
-    // const isComplete = i === this.variables.length;
     const isComplete = this.variables.every(v => v.value[0]);
 
     if(isComplete) {
