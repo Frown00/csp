@@ -1,5 +1,5 @@
 # Graph Coloring Problem
-Program made as a university project to learn how backtracking and forward checking algorithms works and how to program them.\
+Program created as a university project to learn how backtracking and forward checking algorithms works and how to program them.\
 It's a problem which may classified as Constraint Satisfaction Problem (CSP).\
 Two algorithms mention above are use to solve this type of problems.
 
